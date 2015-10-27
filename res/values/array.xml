@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="lightmode_en">
+		<item>00 RED STATIC</item>
+		<item>01 GREEN STATIC</item>
+		<item>02 BLUE STATIC</item>
+		<item>03 YELLOW STATIC</item>
+		<item>04 PURPLE STATIC</item>
+		<item>05 CYAN STATIC</item>
+		<item>06 WHITE STATIC</item>
+		<item>07 THREE COLOR JUMP DYNAMIC</item>
+		<item>08 SEVEN COLOR JUMP DYNAMIC</item>
+		<item>09 THREE COLOR RESPIRATORY CHANGES DYNAMIC</item>
+		<item>10 SEVEN COLOR RESPIRATORY CHANGES DYNAMIC</item>
+		<item>11 FULL COLOR GRADIENT DYNAMIC</item>
+		<item>12 SEVEN COLOR GRADIENT DYNAMIC</item>
+		<item>13 THREE COLOR GRADIENT DYNAMIC</item>
+		<item>14 RED RESPIRATORY CHANGES DYNAMIC</item>
+		<item>15 GREEN RESPIRATORY CHANGES DYNAMIC</item>
+		<item>16 BLUE RESPIRATORY CHANGES DYNAMIC</item>
+		<item>17 YELLOW RESPIRATORY CHANGES DYNAMIC</item>
+		<item>18 PURPLE RESPIRATORY CHANGES DYNAMIC</item>
+		<item>19 CYAN RESPIRATORY CHANGES DYNAMIC</item>
+		<item>20 WHITE RESPIRATORY CHANGES DYNAMIC</item>
+		<item>21 THREE COLOR FLICKER DYNAMIC</item>
+		<item>22 SEVER COLOR FLICKER DYNAMIC</item>
+		<item>23 RED FLICKER DYNAMIC</item>
+		<item>24 GREEN FLICKER DYNAMIC</item>
+		<item>25 BLUE FLICKER DYNAMIC</item>
+		<item>26 YELLOW FLICKER DYNAMIC</item>
+		<item>27 PURPLE FLICKER DYNAMIC</item>
+		<item>28 CYAN FLICKER DYNAMIC</item>
+		<item>29 WHITE FLICKER DYNAMIC</item>
+    </string-array>
+    <string-array name="lightmode_zh">
+		<item>00 红色 静态</item>
+		<item>01绿色静态</item>
+		<item>02蓝色静态</item>
+		<item>03黄色静态</item>
+		<item>04紫色静态</item>
+		<item>05青色静态</item>
+		<item>06白色静态</item>
+		<item>07三色跳变动态</item>
+		<item>08七色跳变动态</item>
+		<item>09三色呼吸变化动态</item>
+		<item>10七色呼吸变化动态</item>
+		<item>11全彩渐变动态</item>
+		<item>12七彩渐变动态</item>
+		<item>13三色渐变动态</item>
+		<item>14红色呼吸变化动态</item>
+		<item>15绿色呼吸变化动态</item>
+		<item>16蓝色呼吸变化动态</item>
+		<item>17黄色呼吸变化动态</item>
+		<item>18紫色呼吸变化动态</item>
+		<item>19青色呼吸变化动态</item>
+		<item>20白色呼吸变化动态</item>
+		<item>21三色闪烁动态</item>
+		<item>22七色闪烁动态</item>
+		<item>23红色闪烁动态</item>
+		<item>24绿色闪烁动态</item>
+		<item>25蓝色闪烁动态</item>
+		<item>26黄色闪烁动态</item>
+		<item>27紫色闪烁动态</item>
+		<item>28青色闪烁动态</item>
+		<item>29白色闪烁动态</item>
+    </string-array>
+</resources>

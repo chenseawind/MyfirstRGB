@@ -1,0 +1,110 @@
+﻿<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/background"
+    android:orientation="vertical" >
+    <com.example.myfirstrgb.ColorPickerView
+        android:id="@+id/colorpicker4"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"/>
+
+	<LinearLayout
+    	android:layout_width="fill_parent"
+   		android:layout_height="wrap_content" 
+   		android:orientation="vertical" >
+
+	    <RelativeLayout
+	    	android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_centerHorizontal="true"  >
+	        <TextView 
+	            	android:id="@+id/txtHide" 
+	            	android:layout_width="30dp" 
+	            	android:layout_height="60dp"  
+           			android:layout_centerHorizontal="true" />  
+	        <Button
+	            android:id="@+id/button1"
+	            	android:text="CLOSED" 
+	                android:layout_width="100dp"   
+            		android:layout_height="wrap_content"
+	                android:gravity="center"
+	                android:layout_toLeftOf="@id/txtHide"/>
+			<Button
+	            android:id="@+id/button2"
+	                android:layout_width="100dp"   
+            		android:layout_height="wrap_content" 
+            		android:layout_toRightOf="@id/txtHide"
+	                android:text="OPEN" />
+	    </RelativeLayout> 
+	    <RelativeLayout
+	    	android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_centerHorizontal="true"  >
+	        <TextView 
+	            	android:id="@+id/txtHide1" 
+	            	android:layout_width="30dp" 
+	            	android:layout_height="60dp"  
+           			android:layout_centerHorizontal="true" />  
+	        <Button
+	            android:id="@+id/button3"
+	            	android:text="mode+" 
+	                android:layout_width="100dp"   
+            		android:layout_height="wrap_content"
+	                android:gravity="center"
+	                android:layout_toLeftOf="@id/txtHide1"/>
+			<Button
+	            android:id="@+id/button4"
+	                android:layout_width="100dp"   
+            		android:layout_height="wrap_content" 
+            		android:layout_toRightOf="@id/txtHide1"
+	                android:text="mode-" />
+	    </RelativeLayout> 
+	    <RelativeLayout
+	    	android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_centerHorizontal="true"  >
+	        <TextView 
+	            	android:id="@+id/txtHide2" 
+	            	android:layout_width="30dp" 
+	            	android:layout_height="60dp"  
+           			android:layout_centerHorizontal="true" />  
+	        <Button
+	            android:id="@+id/button5"
+	            	android:text="light+" 
+	                android:layout_width="100dp"   
+            		android:layout_height="wrap_content"
+	                android:gravity="center"
+	                android:layout_toLeftOf="@id/txtHide2"/>
+			<Button
+	            android:id="@+id/button6"
+	                android:layout_width="100dp"   
+            		android:layout_height="wrap_content" 
+            		android:layout_toRightOf="@id/txtHide2"
+	                android:text="light-" />
+	    </RelativeLayout> 
+	    <RelativeLayout
+	    	android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_centerHorizontal="true"  >
+	        <TextView 
+	            	android:id="@+id/txtHide3" 
+	            	android:layout_width="30dp" 
+	            	android:layout_height="60dp"  
+           			android:layout_centerHorizontal="true" />  
+	        <Button
+	            android:id="@+id/button7"
+	            	android:text="speed+" 
+	                android:layout_width="100dp"   
+            		android:layout_height="wrap_content"
+	                android:gravity="center"
+	                android:layout_toLeftOf="@id/txtHide3"/>
+			<Button
+	            android:id="@+id/button8"
+	                android:layout_width="100dp"   
+            		android:layout_height="wrap_content" 
+            		android:layout_toRightOf="@id/txtHide3"
+	                android:text="speed-" />
+	    </RelativeLayout> 
+	</LinearLayout>
+	
+</LinearLayout>

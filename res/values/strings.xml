@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Link Home</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+	<string name="hello">hello</string>
+	<string name="str_conntowifi">Connecting to controller...</string>
+	<string name="str_conntowifi_zh">正在连接到控制器...</string>
+    <string name="str_plsconntowifi">Please connect to Controller first!</string>
+    <string name="str_plsconntowifi_zh">请先连接到控制器!</string>
+    <string name="str_completing">Completing...</string>    
+    <string name="str_completing_zh">正在完成...</string>
+    <string name="str_configuring">Configuring...</string>
+    <string name="str_configuring_zh">正在配置...</string>
+    <string name="btn_color_picker">Color Picker</string>
+    <string name="str_speed_en">Speed:</string>
+    <string name="str_speed_zh">速度:</string>
+    <string name="str_brightness_en">Brightness:</string>
+    <string name="str_brightness_zh">亮度:</string>
+    <color name="green">#00bc00</color>
+    
+</resources>
