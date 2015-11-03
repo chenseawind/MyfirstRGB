@@ -314,7 +314,7 @@ public class ColorPickerView extends View {
 	        }
         }
         wheel_val=2*wheel_val+1;
-        if(MainActivity.senddelay_flag==0)
+       // if(MainActivity.senddelay_flag==0)
         {
         	ColorPickerActivity.wheel_value=(byte)wheel_val;
         	MainActivity.senddelay_cout=0;

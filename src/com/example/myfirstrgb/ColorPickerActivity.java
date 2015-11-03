@@ -54,6 +54,15 @@ public class ColorPickerActivity extends Activity {
     private TextView tv5= null;
     private TextView tv6 = null;
     
+    final  byte  CMD_SYS_ON_OFF=(byte)0x96;
+    final  byte  CMD_WHITE_LEDS_ON=(byte)0x92;
+    final  byte  CMD_BLINK_MODE_UP=(byte)0x95;
+    final  byte  CMD_BLINK_MODE_DOWN=(byte)0x85;
+    final  byte  CMD_BRIGHTNESS_UP=(byte)0x90;
+    final  byte  CMD_BRIGHTNESS_DOWN=(byte)0x91;
+    final  byte  CMD_TC_SPEED_UP=(byte)0x94;
+    final  byte  CMD_TC_SPEED_DOWN=(byte)0x93;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,56 +88,56 @@ public class ColorPickerActivity extends Activity {
 		btn1.setOnClickListener(new  android.view.View.OnClickListener() {// 设置按钮的点击事件
 			@Override
 			 public void onClick(View v) {
-				MainActivity.localWifiUtils.msg8[5]=(byte)0XA2;
+				MainActivity.localWifiUtils.msg8[5]=CMD_SYS_ON_OFF;
 				MainActivity.localWifiUtils.sendMessage(MainActivity.localWifiUtils.msg8); 
 		 	}
 		 });
 		btn2.setOnClickListener(new  android.view.View.OnClickListener() {// 设置按钮的点击事件
 			@Override
 			 public void onClick(View v) {
-				MainActivity.localWifiUtils.msg8[5]=(byte)0XAC;
+				MainActivity.localWifiUtils.msg8[5]=CMD_WHITE_LEDS_ON;
 				MainActivity.localWifiUtils.sendMessage(MainActivity.localWifiUtils.msg8); 
 		 	}
 		 });
 		btn3.setOnClickListener(new  android.view.View.OnClickListener() {// 设置按钮的点击事件
 			@Override
 			 public void onClick(View v) {
-				MainActivity.localWifiUtils.msg8[5]=(byte)0X83;
+				MainActivity.localWifiUtils.msg8[5]=CMD_BLINK_MODE_UP;
 				MainActivity.localWifiUtils.sendMessage(MainActivity.localWifiUtils.msg8); 
 		 	}
 		 });
 		btn4.setOnClickListener(new  android.view.View.OnClickListener() {// 设置按钮的点击事件
 			@Override
 			 public void onClick(View v) {
-				MainActivity.localWifiUtils.msg8[5]=(byte)0X84;
+				MainActivity.localWifiUtils.msg8[5]=CMD_BLINK_MODE_DOWN;
 				MainActivity.localWifiUtils.sendMessage(MainActivity.localWifiUtils.msg8); 
 		 	}
 		 });
 		btn5.setOnClickListener(new  android.view.View.OnClickListener() {// 设置按钮的点击事件
 			@Override
 			 public void onClick(View v) {
-				MainActivity.localWifiUtils.msg8[5]=(byte)0XA4;
+				MainActivity.localWifiUtils.msg8[5]=CMD_BRIGHTNESS_UP;
 				MainActivity.localWifiUtils.sendMessage(MainActivity.localWifiUtils.msg8); 
 		 	}
 		 });
 		btn6.setOnClickListener(new  android.view.View.OnClickListener() {// 设置按钮的点击事件
 			@Override
 			 public void onClick(View v) {
-				MainActivity.localWifiUtils.msg8[5]=(byte)0XA5;
+				MainActivity.localWifiUtils.msg8[5]=CMD_BRIGHTNESS_DOWN;
 				MainActivity.localWifiUtils.sendMessage(MainActivity.localWifiUtils.msg8); 
 		 	}
 		 });
 		btn7.setOnClickListener(new  android.view.View.OnClickListener() {// 设置按钮的点击事件
 			@Override
 			 public void onClick(View v) {
-				MainActivity.localWifiUtils.msg8[5]=(byte)0XAD;
+				MainActivity.localWifiUtils.msg8[5]=CMD_TC_SPEED_UP;
 				MainActivity.localWifiUtils.sendMessage(MainActivity.localWifiUtils.msg8); 
 		 	}
 		 });
 		btn8.setOnClickListener(new  android.view.View.OnClickListener() {// 设置按钮的点击事件
 			@Override
 			 public void onClick(View v) {
-				MainActivity.localWifiUtils.msg8[5]=(byte)0XAE;
+				MainActivity.localWifiUtils.msg8[5]=CMD_TC_SPEED_DOWN;
 				MainActivity.localWifiUtils.sendMessage(MainActivity.localWifiUtils.msg8); 
 		 	}
 		 });
@@ -138,19 +147,19 @@ public class ColorPickerActivity extends Activity {
 		public boolean onTouch(View v, MotionEvent event) {
 		switch (v.getId()) {
 		case R.id.button5:
-			MainActivity.localWifiUtils.msg8[5]=(byte)0XA4;
+			MainActivity.localWifiUtils.msg8[5]=CMD_BRIGHTNESS_UP;
 			onTouchChange(event.getAction());
 		break;
 		case R.id.button6:
-			MainActivity.localWifiUtils.msg8[5]=(byte)0XA5;
+			MainActivity.localWifiUtils.msg8[5]=CMD_BRIGHTNESS_DOWN;
 			onTouchChange(event.getAction());
 		break;
 		case R.id.button7:
-			MainActivity.localWifiUtils.msg8[5]=(byte)0XAD;
+			MainActivity.localWifiUtils.msg8[5]=CMD_TC_SPEED_UP;
 			onTouchChange(event.getAction());
 			break;
 		case R.id.button8:
-			MainActivity.localWifiUtils.msg8[5]=(byte)0XAE;
+			MainActivity.localWifiUtils.msg8[5]=CMD_TC_SPEED_DOWN;
 			onTouchChange(event.getAction());
 			break;
 		

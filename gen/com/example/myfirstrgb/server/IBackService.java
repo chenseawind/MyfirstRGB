@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: E:\\android program\\esp8266\\MyfirstRGB\\src\\com\\example\\myfirstrgb\\server\\IBackService.aidl
+ * Original file: E:\\android program\\esp8266\\MyfirstRGB\\MyfirstRGB\\src\\com\\example\\myfirstrgb\\server\\IBackService.aidl
  */
 package com.example.myfirstrgb.server;
 public interface IBackService extends android.os.IInterface

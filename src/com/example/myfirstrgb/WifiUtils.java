@@ -3,11 +3,17 @@ package com.example.myfirstrgb;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -38,12 +44,18 @@ public class WifiUtils {
   	public static byte[] msg5 = {(byte)0XFD,(byte)0X07,(byte)0X33,(byte)0X33,(byte)0X33,'\r','\n'};
   	public static byte[] msg6 = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
   	public static byte[] msg7 = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
-  	public static byte[] msg8 = {(byte)0XFD,(byte)0X08,0,0,0,0,'\r','\n','a','b'};
+  	public static byte[] msg8 = {(byte)0XFD,(byte)0X08,0,0,0,0,'\r','\n'};
   	public static String SERVERIP = "192.168.1.102";//
     public static int    SERVERPORT= 7799;//
     static Socket _socket = null;
+    private Thread mThreadClient = null;
     private static PrintWriter _printWriter = null;
-	private WifiManager localWifiManager;//提供Wifi管理的各种主要API，主要包含wifi的扫描、建立连接、配置信息等
+    
+    public static boolean LISTEN = true;
+    private static final int RxPort=11119;
+	private static final int TxPort=12119;
+	private static final int BUF_SIZE = 1024;
+	public static WifiManager localWifiManager;//提供Wifi管理的各种主要API，主要包含wifi的扫描、建立连接、配置信息等
 	//private List<ScanResult> wifiScanList;//ScanResult用来描述已经检测出的接入点，包括接入的地址、名称、身份认证、频率、信号强度等
 	private List<WifiConfiguration> wifiConfigList;//WIFIConfiguration描述WIFI的链接信息，包括SSID、SSID隐藏、password等的设置
 	public static  WifiInfo wifiConnectedInfo;//已经建立好网络链接的信息
@@ -51,6 +63,140 @@ public class WifiUtils {
 	
 	public WifiUtils( Context context){
 		localWifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+	}
+	private static InetAddress getBroadcastIp() {
+		// Function to return the broadcast address, based on the IP address of the device
+		try {
+			WifiInfo wifiInfo = localWifiManager.getConnectionInfo();
+			int ipAddress = wifiInfo.getIpAddress();
+			String addressString = toBroadcastIp(ipAddress);
+			InetAddress broadcastAddress = InetAddress.getByName(addressString);
+			return broadcastAddress;
+		}
+		catch(UnknownHostException e) {
+			
+			return null;
+		}
+		
+	}
+	private static String toBroadcastIp(int ip) {
+		// Returns converts an IP address in int format to a formatted string
+		return (ip & 0xFF) + "." +
+				((ip >> 8) & 0xFF) + "." +
+				((ip >> 16) & 0xFF) + "." +
+				"255";
+	}
+	public static void sendMessage(final byte message[])
+	{
+
+		Thread replyThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				
+				try {
+					InetAddress address = InetAddress.getByName(SERVERIP);
+					DatagramSocket socket = new DatagramSocket();
+					DatagramPacket packet = new DatagramPacket(message, message.length, address, TxPort);
+					socket.send(packet);
+					socket.disconnect();
+					socket.close();
+				}
+				catch(UnknownHostException e) {
+				}
+				catch(SocketException e) {
+				}
+				catch(IOException e) {
+				}
+			}
+		});
+		replyThread.start();
+
+	}
+	public static void sendMessage(final String message, final int port) {
+		// Creates a thread used for sending notifications
+		Thread replyThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				try {
+					InetAddress address =getBroadcastIp();
+					byte[] messagedata = message.getBytes();
+					DatagramSocket socket = new DatagramSocket();
+					DatagramPacket packet = new DatagramPacket(messagedata, messagedata.length, address, port);
+					socket.send(packet);
+					socket.disconnect();
+					socket.close();
+				}
+				catch(UnknownHostException e) {
+				}
+				catch(SocketException e) {
+				}
+				catch(IOException e) {
+				}
+			}
+		});
+		replyThread.start();
+	}
+	public static void startListener() {
+		// Creates the listener thread
+		LISTEN = true;
+		Thread listener = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				try {
+					// Set up the socket and packet to receive
+					DatagramSocket socket = new DatagramSocket(RxPort);
+					socket.setSoTimeout(1000);
+					byte[] buffer = new byte[BUF_SIZE];
+					DatagramPacket packet = new DatagramPacket(buffer, BUF_SIZE);
+					while(LISTEN) {
+						if(MainActivity.connectserver_flag!=20)sendMessage("GETIP\r\n",TxPort);
+						try {
+							socket.receive(packet);
+							int datalength=packet.getLength();
+							if(datalength>3)
+							{
+								final int sublength=datalength-3;
+								byte rxdatabuf0=(byte)(buffer[0]+buffer[1]+buffer[2]+buffer[3]+0x55);
+								if((buffer[0]=='"')&&(buffer[sublength]=='"'))
+								{
+									String data = new String(buffer, 0, packet.getLength());
+									SERVERIP=data.substring(1,sublength);
+									MainActivity.connectserver_flag=20;
+									MainActivity.Time_over_done=1;
+								}
+								else if((buffer[0]==(byte)0xfa)&&(buffer[4]==rxdatabuf0)&&(MainActivity.CommandType == 1))
+								{
+									MainActivity.Time_over_done=3;
+									MainActivity.CommandType=0;
+									msg4[6]=buffer[1];
+				    				msg4[7]=buffer[2];
+				    				msg4[8]=0;
+				    				MainActivity.prod_type=buffer[3];
+								}
+							}
+						}
+						catch(Exception e) {}
+					}
+					//Log.i(LOG_TAG, "Call Listener ending");
+					socket.disconnect();
+					socket.close();
+				}
+				catch(SocketException e) {
+					
+					//Log.e(LOG_TAG, "SocketException in listener " + e);
+				}
+			}
+		});
+		listener.start();
+	}
+
+	public static void stopListener() {
+		// Ends the listener thread
+		LISTEN = false;
 	}
 	private Thread _thread = new Thread(){
 		  public void run(){ 
@@ -182,22 +328,17 @@ public class WifiUtils {
 	 };
 	 public void disconnecttoserver()
 	 {
-		 new Thread(newsocket).stop();
+		// _socket = new Socket(SERVERIP, SERVERPORT);
+		// _socket.close();
+		 mThreadClient.interrupt();
+		 mThreadClient.stop();
 	 }
 	 public void connecttoserver()
 		{
-		new Thread(newsocket).start();
+		 mThreadClient =new Thread(newsocket);
+		 mThreadClient.start();
 		//newsocket.run();
 		}
-	 public static void sendMessage(byte[] message){
-			try {
-				DataInputStream is=new DataInputStream(new ByteArrayInputStream(message));
-				OutputStream os   = _socket.getOutputStream(); 
-				os.write(message); 
-				os.flush(); 
-				} catch (Exception e) {
-				}
-			}
     //检查WIFI状态
 	//开启WIFI
 	public void WifiOpen(){

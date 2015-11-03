@@ -24,7 +24,7 @@
            			android:layout_centerHorizontal="true" />  
 	        <Button
 	            android:id="@+id/button1"
-	            	android:text="CLOSED" 
+	            	android:text="on/off" 
 	                android:layout_width="100dp"   
             		android:layout_height="wrap_content"
 	                android:gravity="center"
@@ -34,7 +34,7 @@
 	                android:layout_width="100dp"   
             		android:layout_height="wrap_content" 
             		android:layout_toRightOf="@id/txtHide"
-	                android:text="OPEN" />
+	                android:text="white" />
 	    </RelativeLayout> 
 	    <RelativeLayout
 	    	android:layout_width="fill_parent"

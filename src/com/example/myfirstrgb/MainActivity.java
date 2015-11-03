@@ -1,5 +1,11 @@
 package com.example.myfirstrgb;
 
+
+
+
+import com.example.myfirstrgb.ContactManager;
+
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -11,16 +17,18 @@ import java.io.PrintWriter;
 import java.io.PrintStream; 
 import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-
- 
-
+import java.net.SocketTimeoutException;
 
 
 
@@ -96,11 +104,11 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.List;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity 
+{
 	List<Restaurant> model=new ArrayList<Restaurant>();
 	ListView listView;
 	Button senddatabutton;
@@ -109,8 +117,9 @@ public class MainActivity extends Activity {
 	RestaurantAdapter adapter=null;
 	Restaurant current=null;
 	Restaurant currentbuf=null;
-
 	
+	
+	private static ContactManager contactManager;
 	public static WifiUtils localWifiUtils=null;
 	MtitlePopupWindow mtitlePopupWindow;
 	MtitlePopupWindow mPopDelDes;
@@ -122,6 +131,12 @@ public class MainActivity extends Activity {
 	public static String delete_buf;
 	public static byte ipbuf_cout=0;
 	
+	private static final int RxPort=11119;
+	private static final int TxPort=12119;
+	private static final int BUF_SIZE = 1024;
+	public static int Time_over_done=0;
+	
+	public static boolean save_ip_flag=false;
 	public Cursor curs = null;
 	public Cursor curs_ip = null;
 	public Cursor curs_ipbuf=null;
@@ -165,6 +180,7 @@ public class MainActivity extends Activity {
 	private byte dbcout;
 	private Thread mThreadClient = null;
 	private Socket mSocketClient = null;
+	private boolean LISTEN = true;
 	
 	private View pview;
 	private Handler mHandler;
@@ -248,7 +264,7 @@ public class MainActivity extends Activity {
 			db.execSQL(sqlstr);
 	  		currentbuf=new Restaurant();
 			Timer searchiptimer = new Timer(true);
-		  	searchiptimer.schedule(searchiptask,1000,20);
+		  	searchiptimer.schedule(searchiptask,100,300);
 			//显示灯列表
 		  		adapter=new RestaurantAdapter();
 				listView.setAdapter(adapter);
@@ -347,7 +363,6 @@ public class MainActivity extends Activity {
 					case 2:
 						//璁剧疆WIFI
 						setwifi();
-						CommandType = 3;
 						break;					
 					default:
 						break;
@@ -368,12 +383,7 @@ public class MainActivity extends Activity {
 				    	if(lightno_max>0)
 				    	{
 				    		curs.moveToFirst();
-				    		localWifiUtils.SERVERIP=curs.getString(3);
-				    		connect_mode=curs.getInt(1);
-				    		localWifiUtils.connecttoserver();
-				    		lightno=(byte)curs.getInt(2);
 				    		lightno=lightno_max;
-				    		CommandType=3;
 				    		curs.moveToNext();
 				    		while(!curs.isAfterLast())
 							{
@@ -393,123 +403,37 @@ public class MainActivity extends Activity {
 				    		lightno=1;
 				    	//	search_ip_flag=2;
 				    	}		
-				    	if(connect_mode == 10)
-				    	{
-				    		search_ip_flag=2;
-				    		if(localWifiUtils.isWifiConnected(MainActivity.this))
-				    		{
-				    			connhandler.sendEmptyMessage(4);	
-				    		}
-				    		else
-				    		{
-				    			connhandler.sendEmptyMessage(5);	
-				    		}
-				    		
-				    	}
+				    	localWifiUtils.startListener();
+				    	localWifiUtils.sendMessage("GETIP\r\n",TxPort);
     }
     TimerTask searchiptask=new TimerTask(){  
     	 public void run() { 
-    		 connectserver_cout++;
-    		 if(connectserver_cout>1000)
+    		 if(!localWifiUtils.isWifiConnected(MainActivity.this))
+	    		{
+					//localWifiUtils.WifiOpen();
+					connhandler.sendEmptyMessage(5);
+					connectserver_flag=0;
+					//弹出ＷＩＦＩ网络没连上。
+	    		}
+    		 switch(Time_over_done)
     		 {
-    			 connectserver_cout=0;
-    			 if(connectserver_flag==0)
-    			 {
-    				 connectserver_error++;
-    				 if(connectserver_error>2)
-    				 {
-    					 connectserver_error=0;
-    					 if(connect_mode == 10)
-    					 {
-    						 localWifiUtils.SERVERIP="192.168.4.1";
-    						 localWifiUtils.connecttoserver();
-    					 }
-    					 else
-    					 {
-	    					 search_ip_cout=0;
-	    					 search_ip_flag=0;
-    					 }
-    				 }
-    			 }
-    			 localWifiUtils.sendMessage(localWifiUtils.msg5);
-    			 connectserver_flag=0;
-    		 }
-    		 senddelay_cout++;
-    		 if(senddelay_cout>2)
-    			 {
-    			 	senddelay_cout=0;
-    			 	senddelay_flag=0;
-    			 	if(!localWifiUtils.isWifiConnected(MainActivity.this))
-    			 	{
-    			 		wificonnect_flag=0;
-    			 		connhandler.sendEmptyMessage(5);	
-    			 	}
-    			 	else if(localWifiUtils.isWifiConnected(MainActivity.this)&&(wificonnect_flag==0))
-    			 	{
-    			 		 if(connect_mode == 10)
-    					 {
-    						 localWifiUtils.SERVERIP="192.168.4.1";
-    						 localWifiUtils.connecttoserver();
-    						 connhandler.sendEmptyMessage(4);
-    						 wificonnect_flag=1;
-    					 }
-    			 		 else
-    			 		 {
-	    			 		wificonnect_flag=1;
-	    			 		search_ip_cout=0;
-	    			 		search_ip_flag=0;
-    			 		 }
-    			 	}
-    			 }
-    		 switch(search_ip_flag)
-    		 {
-    		 	case 0:
-    		 		if(search_ip_cout<230)
-    	  			{
-	    	  			search_ip_cout++;
-	    	  			localWifiUtils.SERVERIP=intToIp(search_ip_cout);
-	    	  			localWifiUtils.connecttoserver();
-	    	  			CommandType=3;
-    	  			}
-    		 		else 
-    		 		{
-    		 			if(search_ip_cout<400)
-    		 			{
-    		 				search_ip_cout++;
-    		 			}
-    		 			else
-    		 			{
-    		 				search_ip_flag=2;
-    		 			}
-    		 		}
-    		 		break;
     		 	case 1:
-    		 		search_ip_cout=255;
-	  				CommandType=0;	
-	  				connect_ip_ready=1;
-	  				connhandler.sendEmptyMessage(4);	
-	  				search_ip_flag=2;
-	  				lightno_buf=0;
-	  				connhandler.sendEmptyMessage(10);	
+    		 		connhandler.sendEmptyMessage(4);	
+    		 		Time_over_done=0;
 	  				break;
     		 	case 2:
-//    		 		CommandType=0;
+    		 		connhandler.sendEmptyMessage(5);
+    		 		Time_over_done=0;
     		 		break;
-    		 	case  9:
-    		 		connhandler.sendEmptyMessage(9);	
-    		 		search_ip_flag=2;
+    		 	case 3:
+    		 		connhandler.sendEmptyMessage(9);
+    		 		Time_over_done=0;
     		 		break;
-    		 	case 10:
-    		 		connhandler.sendEmptyMessage(10);	
-    		 		search_ip_flag=0;
-    		 		search_ip_cout=0;
+    		 	default:
     		 		break;
-    		 	case 11:
-    		 		connhandler.sendEmptyMessage(10);	
-    		 		search_ip_flag=2;
-    		 		break;
-    		 }
     	  }
+    	}
+    	  
     };
 	private AdapterView.OnItemClickListener onListClick=new AdapterView.OnItemClickListener() {
 		public void onItemClick(AdapterView<?> parent,View view, int position,long id) {
@@ -630,6 +554,7 @@ public class MainActivity extends Activity {
   	private void setdirectmode()
   	{
   		search_ip_flag=2;
+  //		stopListener();
   		Intent intent = new Intent(MainActivity.this, DirectActivity.class);
 		startActivity(intent);
   	}
@@ -730,11 +655,11 @@ public class MainActivity extends Activity {
 			prod_type.setText(Integer.toString(r.getprod_type()));
 			if(r.getstate()==(byte)0xaa)
 			{
-				btn.setBackgroundResource(R.drawable.switch_on);
+				btn.setBackgroundResource(R.drawable.switch_on1);
 			}
 			else if(r.getstate()==(byte)0x55)
 			{
-				btn.setBackgroundResource(R.drawable.switch_off);
+				btn.setBackgroundResource(R.drawable.switch_off1);
 			}
 //			icon.setImageResource(R.drawable.light_50);
 //			btn.setBackgroundResource(R.drawable.switch_on);
@@ -864,7 +789,7 @@ private static String intToIp(int i) {
 						break;
 					}
 				}
-				};
+				};			
 	private List<Module> decodePackets(List<DatagramPacket> packets) {			
 		int i = 1;
 		Module module;
@@ -915,53 +840,6 @@ private static String intToIp(int i) {
 				instance = new MyOnClickListener(inPosition,viewHolder);
 				return instance;
 			}
-		/*
-		public void onClick(View v) {
-			TextView tv = null;
-			TextView tv1 = null;
-			TextView tv2 = null;
-			View tlv=null;
-			tlv = (View)v.getParent();
-			tv = (TextView)tlv.findViewById(R.id.TextView01);
-			tv1 = (TextView)tlv.findViewById(R.id.prod_id);
-			tv2 = (TextView)tlv.findViewById(R.id.prod_type);
-			lightno_buf = (byte) Integer.parseInt(tv1.getText().toString());
-			Cursor curs= db.rawQuery("Select * From MainTable", null);
-			if(curs.getCount()>0)
-			{
-				curs.moveToFirst();
-				while(!curs.isAfterLast())
-				{
-					if(lightno_buf==(byte)curs.getInt(2))
-					{
-						prod_type=(byte)curs.getInt(1);
-						if(prod_type==1)
-						{
-							localWifiUtils.msg8[5]=(byte)curs.getInt(4);
-							if((byte)curs.getInt(4)==(byte)0xaa)
-							{
-								v.setBackgroundResource(R.drawable.switch_off);	
-								localWifiUtils.msg8[5]=(byte)0xa2;
-								sqlstr = "update MainTable set lightstate = " + (byte)0x55 + "  Where lightno = " + lightno_buf;
-							}
-							else
-							{
-								v.setBackgroundResource(R.drawable.switch_on);
-								localWifiUtils.msg8[5]=(byte)0xac;
-								sqlstr = "update MainTable set lightstate = " + (byte)0xaa + "  Where lightno = " + lightno_buf;
-							}
-							localWifiUtils.msg8[2]=0x01;
-							localWifiUtils.msg8[3]=(byte)curs.getInt(5);
-							localWifiUtils.msg8[4]=(byte)curs.getInt(6);
-							localWifiUtils.sendMessage(localWifiUtils.msg8);
-
-						}
-					}
-					curs.moveToNext();
-				}
-			}
-		}
-*/
 		public void onClick(View v) {
 		//TODO: do something here
 			TextView tv = null;
@@ -979,14 +857,14 @@ private static String intToIp(int i) {
 		//				lightno_buf= (byte) Integer.parseInt(tv1.getText().toString());
 						if(tv.getText()=="1")
 						{
-							v.setBackgroundResource(R.drawable.switch_off);	
+							v.setBackgroundResource(R.drawable.switch_off1);	
 							sqlstr = "update MainTable set lightstate = 0 Where lighttype = " + tv2.getText() + " And lightno = " + tv1.getText();
 							tv.setText("0");
 							localWifiUtils.msg8[5]=(byte)0xa2;
 						}
 						else
 						{
-							v.setBackgroundResource(R.drawable.switch_on);
+							v.setBackgroundResource(R.drawable.switch_on1);
 							sqlstr = "update MainTable set lightstate = 1 Where lighttype = " + tv2.getText() + " And lightno = " + tv1.getText();
 							tv.setText("1");
 							localWifiUtils.msg8[5]=(byte)0xac;
@@ -1028,7 +906,8 @@ Toast.makeText(this, "null",
 Toast.LENGTH_SHORT).show();
 }
 } 
-
-
 }
+
+
+
 

@@ -19,5 +19,6 @@
     <string name="str_brightness_en">Brightness:</string>
     <string name="str_brightness_zh">亮度:</string>
     <color name="green">#00bc00</color>
+    <string name="savefilepath">保存文件路径</string>
     
 </resources>
